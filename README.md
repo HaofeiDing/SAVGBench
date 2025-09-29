@@ -16,6 +16,8 @@ Our experimental results demonstrate that gaps exist between the baseline method
 
 https://github.com/user-attachments/assets/2038cab3-06f5-47d2-826d-8cf6461d9be3
 
+https://github.com/user-attachments/assets/99a10103-6bb4-40ff-b0e3-04437c346ff0
+
 ## SAVGBench Dataset
 
 The SAVGBench dataset can be downloaded from [Zenodo](https://zenodo.org/records/17139882).
