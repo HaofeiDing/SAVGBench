@@ -14,12 +14,14 @@ Our experimental results demonstrate that gaps exist between the baseline method
 
 ## Generated Videos
 
-https://github.com/user-attachments/assets/edcd51f4-c167-418c-9d4e-e4ed94ba8021
+https://github.com/user-attachments/assets/2038cab3-06f5-47d2-826d-8cf6461d9be3
 
 ## SAVGBench Dataset
 
 The SAVGBench dataset can be downloaded from [Zenodo](https://zenodo.org/records/17139882).
 We use the development set for training and the evaluation set for evaluation.
+
+https://github.com/user-attachments/assets/edcd51f4-c167-418c-9d4e-e4ed94ba8021
 
 ## Code
 
