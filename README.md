@@ -14,7 +14,7 @@ Our experimental results demonstrate that gaps exist between the baseline method
 
 ## Generated Videos
 
-Under preparation.
+https://github.com/user-attachments/assets/edcd51f4-c167-418c-9d4e-e4ed94ba8021
 
 ## SAVGBench Dataset
 
