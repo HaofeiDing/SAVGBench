@@ -40,7 +40,7 @@ def main(
     parser = argparse.ArgumentParser()
     parser.add_argument("--ref_batch", type=str, default="/data6/rld/data/UCF-101/train/ApplyEyeMakeup", help="path to reference batch npz file")
     parser.add_argument("--sample_batch", type=str, default="/data6/rld/data/UCF-101/train/ApplyEyeMakeup", help="path to sample batch npz file")
-    parser.add_argument("--size", type=int, default=128, help="path to sample batch npz file")
+    parser.add_argument("--size", type=int, default=256, help="path to sample batch npz file")
     parser.add_argument("--frame_num",type=int, default=16, help="path to sample batch npz file")
     parser.add_argument("--sample_frame_gap",type=int, default=8, help="path to sample batch npz file")
     parser.add_argument("--sample_num", type=int, default=100)
