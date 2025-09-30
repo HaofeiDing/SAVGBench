@@ -12,6 +12,12 @@ We also propose a new alignment metric that aims to evaluate the spatial alignme
 Then, using the dataset and metric, we benchmark two types of baseline methods: one is based on a joint audio-video generation model, and the other is a two-stage method that combines a video generation model and a video-to-audio generation model.
 Our experimental results demonstrate that gaps exist between the baseline methods and the ground truth in terms of video and audio quality, as well as spatial alignment between the two modalities.
 
+Data Examples:
+<img src="./fig/examples_savgbench_dataset.png" width=100%>
+
+Spatial AV-Align Metric:
+<img src="./fig/spatialavalign_metric.png" width=100%>
+
 ## Generated Videos
 
 https://github.com/user-attachments/assets/2038cab3-06f5-47d2-826d-8cf6461d9be3
