@@ -1,0 +1,8 @@
+{
+    "base_channel": 0,
+
+    "amp_phasediff":{
+        "ch": 3,
+        "ch_sed": 2
+    }
+}

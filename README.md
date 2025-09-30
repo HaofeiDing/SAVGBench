@@ -31,6 +31,79 @@ https://github.com/user-attachments/assets/edcd51f4-c167-418c-9d4e-e4ed94ba8021
 
 https://github.com/user-attachments/assets/b01a76dc-9eb2-44c1-be91-2382282732d7
 
-## Code
+## Getting Started - Joint Method / Evaluation Metrics
+
+### Git clone
+
+You can use git clone and move into the directory.
+```
+git clone https://github.com/SonyResearch/SAVGBench.git
+cd SAVGBench
+```
+
+### Download pretrained models
+
+You can download the pretrained models from [Google Drive](https://drive.google.com/file/d/1_8yjcKEkai_KUR9n4KtduPew0yXxOWlI/view?usp=sharing).
+```
+unzip YOUR_DOWNLOAD_PATH/SAVGBench_PretrainedModels_V1.zip
+```
+
+#### Set pretrained models for inference of joint baseline method
+
+You need to move the pt files of the joint baseline method.
+```
+mkdir joint_method/pretrained_models
+mv YOUR_DOWNLOAD_PATH/SAVGBench_PretrainedModels_V1/model330011.pt joint_method/pretrained_models/
+mv YOUR_DOWNLOAD_PATH/SAVGBench_PretrainedModels_V1/model_SR_mmdiff_120000.pt joint_method/pretrained_models/
+```
+
+#### Set pretrained models for Spatial AV-Align metric
+
+You need to move the pth files of the object detection and sound event localization and detection (SELD) models, which are used in the computation of Spatial AV-Align.
+```
+mv YOUR_DOWNLOAD_PATH/SAVGBench_PretrainedModels_V1/yolox_tiny_8x8_300e_coco_20211124_171234-b4047906.pth av_spatial_evaluation/object_detection_svg_infer/
+mkdir -p av_spatial_evaluation/stereo_seld_infer/data/model_monitor/20240912162834/
+mv YOUR_DOWNLOAD_PATH/SAVGBench_PretrainedModels_V1/params_swa_20240912162834_0040000.pth av_spatial_evaluation/stereo_seld_infer/data/model_monitor/20240912162834/
+```
+
+### Prepare python environment
+
+The inference and metric computation has been tested on python 3.10.14 and torch 2.1.2.
+```
+pip install torch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 --index-url https://download.pytorch.org/whl/cu121
+```
+
+You need to set up mmdetection for object detection model. (Ref: https://mmdetection.readthedocs.io/en/latest/get_started.html)
+
+After installation of mmdetection, you can continue to install with the below lines.
+(We recommend to use `requirements_joint_and_metric.txt` after installation of torch and mmdetection modules as we do not check the difference between pip and mim.)
+```
+pip install -U pip setuptools
+sudo apt install libopenmpi-dev
+pip install -r requirements_joint_and_metric.txt
+```
+
+### Run evaluation script (including inference and metric computation)
+
+Before running the evaluation script `./evaluation_script.sh`, please modify the paths in the script to use correct paths.
+
+The inference script `./joint_method/run_baseline.sh` is called from the evaluation script.
+You may configure batch size and the GPUs to be used from this file.
+
+You can run the evaluation script.
+```
+./evaluation_script.sh VIDEO_OUTPUT_FOLDER VIDEO_REFERENCE_FOLDER NUM_GPUS
+```
+
+For example, to run on 2 GPUs:
+```
+./evaluation_script.sh USER_PATH/result_outputs/ YOUR_DATASET_PATH/SAVGBench_Dataset_Evaluation/video_eval/ 2
+```
+
+### Run training scripts of joint method
+
+See [joint_method/TRAINING_JOINT.md](joint_method/TRAINING_JOINT.md).
+
+## Getting Started - Two-stage Method
 
 Under preparation.
