@@ -51,14 +51,12 @@ def load_data(
     clip_length_in_frames = video_size[0]
     frames_between_clips = 1
     meta_fname = os.path.join(data_dir, f"video_clip_f{clip_length_in_frames}_g{frames_between_clips}_r{video_fps}.pkl")
-    print(">>> meta_fname, data_dir:" , meta_fname, data_dir)
 
     
     if not os.path.exists(meta_fname):
         if MPI.COMM_WORLD.Get_rank()==0:
             print(f"prepare {meta_fname}...")
-        
-        print(">>> all_files: ",all_files)
+
         video_clips = VideoClips(
                 video_paths=all_files,
                 clip_length_in_frames=clip_length_in_frames, #64
@@ -74,7 +72,6 @@ def load_data(
     else:
         print(f"load {meta_fname}...")
         metadata = pickle.load(open(meta_fname, 'rb'))
-        print(">>> all_files2: ",all_files)
 
         video_clips = VideoClips(video_paths=all_files,
                 clip_length_in_frames=clip_length_in_frames, #64
@@ -180,9 +177,7 @@ class MultimodalDataset(Dataset):
    
         while True:
             try:
-                # print(">>>>> vbefore GETITEM : ")
                 video, raw_audio, info, video_idx = self.video_clips.get_clip(idx)
-                # print(">>>>> after GETITEM : ")
             except Exception:
                 idx = (idx + 1) % self.video_clips.num_clips()
                 continue
@@ -250,7 +245,7 @@ if __name__=='__main__':
     image_resolution=64
 
     dataset64=load_data(
-    data_dir="/mnt/data2/simon/datasets/SAVGBench_Dataset_Development/video_dev/",
+    data_dir="",
     batch_size=batch_size,
     video_size=[int(seconds*video_fps), 3, 64, 64],
     audio_size=[2, int(seconds*audio_fps)],

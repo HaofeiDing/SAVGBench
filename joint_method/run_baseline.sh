@@ -30,7 +30,7 @@ REF_PATH=$2 #
 mkdir -p $OUT_DIR
 
 NUM_GPUS=$3
-mpiexec -n $NUM_GPUS python3 multimodal_sample_sr.py  \
+mpiexec -n $NUM_GPUS --bind-to none python3 multimodal_sample_sr.py  \
 $MODEL_FLAGS $SRMODEL_FLAGS $DIFFUSION_FLAGS $SR_DIFFUSION_FLAGS --ref_path ${REF_PATH} \
 --output_dir ${OUT_DIR} --multimodal_model_path ${MULTIMODAL_MODEL_PATH}  --sr_model_path ${SR_MODEL_PATH} --seed 1010
 

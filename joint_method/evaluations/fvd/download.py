@@ -45,6 +45,16 @@ def download(id, fname):
     save_response_content(response, destination)
     return destination
 
+def download_wget_github(fname):
+    destination = os.path.join(ROOT, fname)
+    if os.path.exists(destination):
+        return destination
+
+    os.makedirs(ROOT, exist_ok=True)
+    download_cammand = f"wget -P {ROOT} https://github.com/songweige/TATS/raw/refs/heads/main/tats/fvd/{fname}"
+
+    os.system(download_cammand)
+    return destination
 
 _I3D_PRETRAINED_ID = '1mQK8KD8G6UWRa5t87SRMm5PVXtlpneJT'
 def load_i3d_pretrained(device=torch.device('cpu')):
@@ -54,7 +64,8 @@ def load_i3d_pretrained(device=torch.device('cpu')):
     # if dist.get_rank()==0:
     #     filepath = download(_I3D_PRETRAINED_ID, 'i3d_pretrained_400.pt')
     # dist.barrier()
-    filepath = "/mnt/data2/simon/models/mm-diffusion/i3d_pretrained_400.pt" #download(_I3D_PRETRAINED_ID, 'i3d_pretrained_400.pt')
+    filepath = download_wget_github('i3d_pretrained_400.pt')
+    # filepath = "/mnt/data2/simon/models/mm-diffusion/i3d_pretrained_400.pt" #download(_I3D_PRETRAINED_ID, 'i3d_pretrained_400.pt')
     is_strict=True
     # print('>>> filepath: ', filepath)
     state_dict=torch.load(filepath, map_location=device)
@@ -66,7 +77,8 @@ def load_i3d_pretrained(device=torch.device('cpu')):
 def load_i3d_pretrained_classifier(device=torch.device('cpu'), num_class=400):
     from .pytorch_i3d import InceptionI3d_Classifier
     i3d = InceptionI3d_Classifier(num_class, in_channels=3).to(device)
-    filepath = filepath = "/mnt/data2/simon/models/mm-diffusion/i3d_pretrained_400.pt" #download(_I3D_PRETRAINED_ID, 'i3d_pretrained_400.pt')
+    filepath = download_wget_github('i3d_pretrained_400.pt')
+    # filepath = "/mnt/data2/simon/models/mm-diffusion/i3d_pretrained_400.pt" #download(_I3D_PRETRAINED_ID, 'i3d_pretrained_400.pt')
     is_strict=True
     state_dict=torch.load(filepath, map_location=device)
     if num_class!=400:

@@ -341,7 +341,7 @@ def main():
                 elif fake_path == sr_save_path: 
                     video_size = [args.video_size[0], args.video_size[1], args.large_size, args.large_size]
                    
-                metric=eval_multimodal(args.ref_path, multimodal_save_path, video_size, args.all_save_num)
+                metric = eval_multimodal(args.ref_path, fake_path, video_size, args.audio_size, args.all_save_num)
                 if dist.get_rank() == 0:
                     logger.log(f"evaluate between {fake_path} and {args.ref_path}")
                     logger.log(metric)

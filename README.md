@@ -42,7 +42,7 @@ https://github.com/user-attachments/assets/b01a76dc-9eb2-44c1-be91-2382282732d7
 ### Git clone
 
 You can use git clone and move into the directory.
-```
+```bash
 git clone https://github.com/SonyResearch/SAVGBench.git
 cd SAVGBench
 ```
@@ -50,14 +50,14 @@ cd SAVGBench
 ### Download pretrained models
 
 You can download the pretrained models from [Google Drive](https://drive.google.com/file/d/1_8yjcKEkai_KUR9n4KtduPew0yXxOWlI/view?usp=sharing).
-```
+```bash
 unzip YOUR_DOWNLOAD_PATH/SAVGBench_PretrainedModels_V1.zip
 ```
 
 #### Set pretrained models for inference of joint baseline method
 
 You need to move the pt files of the joint baseline method.
-```
+```bash
 mkdir joint_method/pretrained_models
 mv YOUR_DOWNLOAD_PATH/SAVGBench_PretrainedModels_V1/model330011.pt joint_method/pretrained_models/
 mv YOUR_DOWNLOAD_PATH/SAVGBench_PretrainedModels_V1/model_SR_mmdiff_120000.pt joint_method/pretrained_models/
@@ -66,7 +66,7 @@ mv YOUR_DOWNLOAD_PATH/SAVGBench_PretrainedModels_V1/model_SR_mmdiff_120000.pt jo
 #### Set pretrained models for Spatial AV-Align metric
 
 You need to move the pth files of the object detection and sound event localization and detection (SELD) models, which are used in the computation of Spatial AV-Align.
-```
+```bash
 mv YOUR_DOWNLOAD_PATH/SAVGBench_PretrainedModels_V1/yolox_tiny_8x8_300e_coco_20211124_171234-b4047906.pth av_spatial_evaluation/object_detection_svg_infer/
 mkdir -p av_spatial_evaluation/stereo_seld_infer/data/model_monitor/20240912162834/
 mv YOUR_DOWNLOAD_PATH/SAVGBench_PretrainedModels_V1/params_swa_20240912162834_0040000.pth av_spatial_evaluation/stereo_seld_infer/data/model_monitor/20240912162834/
@@ -74,19 +74,19 @@ mv YOUR_DOWNLOAD_PATH/SAVGBench_PretrainedModels_V1/params_swa_20240912162834_00
 
 ### Prepare python environment
 
-The inference and metric computation has been tested on python 3.10.14 and torch 2.1.2.
-```
+The inference and metric computation has been tested on python 3.10.19 and torch 2.1.2.
+For example, you can use a [miniforge](https://github.com/conda-forge/miniforge) environment.
+
+```bash
+conda create --name savgbench python=3.10 -y
+conda activate savgbench
+# conda install -c conda-forge ffmpeg  # if needed
+
 pip install torch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 --index-url https://download.pytorch.org/whl/cu121
-```
-
-You need to set up mmdetection for object detection model. (Ref: https://mmdetection.readthedocs.io/en/latest/get_started.html)
-
-After installation of mmdetection, you can continue to install with the below lines.
-(We recommend to use `requirements_joint_and_metric.txt` after installation of torch and mmdetection modules as we do not check the difference between pip and mim.)
-```
-pip install -U pip setuptools
-sudo apt install libopenmpi-dev
 pip install -r requirements_joint_and_metric.txt
+
+pip install openmim==0.3.9
+mim install mmengine==0.10.7 mmcv==2.1.0 mmdet==3.3.0  # mmdetection for object detection: https://mmdetection.readthedocs.io/en/latest/get_started.html
 ```
 
 ### Run evaluation script (including inference and metric computation)
@@ -97,19 +97,25 @@ The inference script `./joint_method/run_baseline.sh` is called from the evaluat
 You may configure batch size and the GPUs to be used from this file.
 
 You can run the evaluation script.
-```
-./evaluation_script.sh VIDEO_OUTPUT_FOLDER VIDEO_REFERENCE_FOLDER NUM_GPUS
+```bash
+./evaluation_script.sh VIDEO_OUTPUT_DIR VIDEO_REFERENCE_DIR NUM_GPUS
 ```
 
-For example, to run on 2 GPUs:
+Please use **absolute paths**. For example, to run on 1 GPU:
+```bash
+./evaluation_script.sh /home/USER_DIR/SAVGBench/result_outputs/ /home/USER_DIR/SAVGBench/SAVGBench_Dataset_Evaluation/video_eval/ 1
 ```
-./evaluation_script.sh USER_PATH/result_outputs/ YOUR_DATASET_PATH/SAVGBench_Dataset_Evaluation/video_eval/ 2
+
+It takes around 30 minutes to generate 96 samples (default). Then you can check the evaluation results at `./results.out`.
 ```
+AV spatial each component: num_TP: 2382, num_FN: 2320, num_TP + num_FN: 4702
+AV_final_score: 0.5065929391748192
+{'fvd': 1218.8477783203125, 'kvd': 55.60466751187866, 'fad': 9.357064962387085}
+Temporal AV-Align: 0.6680675666494543
+```
+The results may vary depending on random seeds etc, but you can get similar results to the ones reported.
+Please note that the FAD score is better than the paper's value since a bug in the FAD computation was fixed.
 
 ### Run training scripts of joint method
 
 See [joint_method/TRAINING_JOINT.md](joint_method/TRAINING_JOINT.md).
-
-## Getting Started - Two-stage Method
-
-Under preparation.

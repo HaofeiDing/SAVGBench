@@ -59,6 +59,16 @@ def load_multimodal_for_worker(base_dir, video_size, audio_size):
 
 def eval_multimodal(real_path, fake_path, video_size=[20,3,64,64], audio_size=[2,80000], eval_num=2048):
     metric = {}
+
+    # fix evaluation seed
+    seed=42
+    import random
+    random.seed(seed)
+    np.random.seed(seed)
+    th.manual_seed(seed)
+    th.cuda.manual_seed(seed)
+    th.cuda.manual_seed_all(seed)
+
     #################### Load I3D ########################################
     i3d = load_i3d_pretrained(dist_util.dev())
     

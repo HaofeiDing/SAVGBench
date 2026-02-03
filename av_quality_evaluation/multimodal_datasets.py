@@ -56,8 +56,7 @@ def load_data(
     if not os.path.exists(meta_fname):
         if MPI.COMM_WORLD.Get_rank()==0:
             print(f"prepare {meta_fname}...")
-        
-        
+
         video_clips = VideoClips(
                 video_paths=all_files,
                 clip_length_in_frames=clip_length_in_frames, #64
@@ -222,7 +221,7 @@ class MultimodalDataset(Dataset):
         elif  raw_audio.shape[1] >= self.audio_size[1]:
             audio = raw_audio[:, :self.audio_size[1]]
 
-        audio = th.tensor(audio) * 80 ## EDITED
+        audio = th.tensor(audio) #* 80## EDITED
         
         return video_after_process, audio
     

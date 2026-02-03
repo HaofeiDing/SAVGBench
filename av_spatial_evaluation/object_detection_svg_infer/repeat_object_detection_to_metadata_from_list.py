@@ -11,7 +11,7 @@ def main(list_txt_video_path, pred_dir):
 
     config_file = "av_spatial_evaluation/object_detection_svg_infer/yolox_tiny_8x8_300e_coco.py"
     checkpoint_file = "av_spatial_evaluation/object_detection_svg_infer/yolox_tiny_8x8_300e_coco_20211124_171234-b4047906.pth"
-    model = init_detector(config_file, checkpoint_file, device="cuda:0")
+    model = init_detector(config_file, checkpoint_file, device="cpu")  # or device="cuda:0" if mmdet-matched GPU
 
     thresh_conf = 0.3
 

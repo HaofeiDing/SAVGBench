@@ -9,8 +9,9 @@ NUM_SAMPLES=96
 SAMPLE_DIR=$OUT_DIR  
 OUTPUT_DIR=$OUT_DIR  
 
-rm -r $OUT_DIR
+rm -r $OUT_DIR  # remove previous results
 
+echo "[Running Inference of Joint Method Baseline]"
 ./joint_method/run_baseline.sh $OUT_DIR $REF_PATH $NUM_GPUS $NUM_SAMPLES
 
 OUT_DIR=$OUT_DIR/sr_mp4/
@@ -25,20 +26,20 @@ LIST_TXT_VIDEO_PATH=${OUT_DIR}/list_path_video.txt
 PRED_SELD_DIR=${OUT_DIR}/pred_seld_swa_20240912162834_0040000
 PRED_OD_DIR=${OUT_DIR}/pred_yolox_tiny_mmdetection
 
-echo sound event localization and detection
+echo "[Spatial AV-Align: Sound Event Localization and Detection (SELD)]"
 python av_spatial_evaluation/stereo_seld_infer/seld.py \
  -infer -evalwt $LIST_TXT_VIDEO_PATH --pred-dir $PRED_SELD_DIR;
 
-echo object detection
-python av_spatial_evaluation/object_detection_svg_infer/repeat_object_detection_to_metadata_from_list.py \
+echo "[Spatial AV-Align: Object Detection]"
+OMP_NUM_THREADS=8 python av_spatial_evaluation/object_detection_svg_infer/repeat_object_detection_to_metadata_from_list.py \
  $LIST_TXT_VIDEO_PATH $PRED_OD_DIR;
 
-echo spatial audiovisual alignment
+echo "[Spatial AV-Align]"
 python av_spatial_evaluation/compute_spatialAValign_metrics.py \
  $LIST_TXT_VIDEO_PATH $PRED_SELD_DIR $PRED_OD_DIR;
 
-echo evaluate quality
-mpiexec -n 1 python evaluate_quality_diversity.py --devices 0 --sample_num ${NUM_SAMPLES} --ref_dir ${REF_PATH} --fake_dir ${SAMPLE_DIR} --output_dir ${OUTPUT_DIR}
+echo "[FVD, KVD, and FAD]"
+mpiexec -n 1 --bind-to none python evaluate_quality_diversity.py --devices 0 --sample_num ${NUM_SAMPLES} --ref_dir ${REF_PATH} --fake_dir ${OUT_DIR} --output_dir ${OUTPUT_DIR}
 
-echo evaluate AV-Align
+echo "[Temporal AV-Align]"
 python3 av_quality_evaluation/av_align_metric.py --input_dir $OUT_DIR

@@ -14,7 +14,7 @@ def main(
     parser.add_argument("--ref_dir", type=str, default=" ", help="path to reference batch npz file")
     parser.add_argument("--fake_dir", type=str, default=" ", help="path to sample batch npz file")
     parser.add_argument("--output_dir", type=str, default=" ", help="" )
-    parser.add_argument("--video_size", type=str, default="20,3,64,64", help="video size")
+    parser.add_argument("--video_size", type=str, default="20,3,256,256", help="video size")
     parser.add_argument("--audio_size", type=str, default="2,80000", help="audio size")
     parser.add_argument("--sample_num", type=int, default=2048)
     parser.add_argument("--devices", type=str, default="G8")
