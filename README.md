@@ -1,6 +1,6 @@
 # SAVGBench: Benchmarking Spatially Aligned Audio-Video Generation
 
-This repository includes the brief introduction, dataset link, and source code for "SAVGBench: Benchmarking Spatially Aligned Audio-Video Generation."
+This repository includes the brief introduction, dataset link, and source code for [SAVGBench: Benchmarking Spatially Aligned Audio-Video Generation](https://arxiv.org/abs/2412.13462) (ICASSP 2026).
 
 ## Abstract
 
@@ -32,6 +32,7 @@ https://github.com/user-attachments/assets/9b96eb99-c0a8-4c4e-9fd8-6e79c0d915de
 
 The SAVGBench dataset can be downloaded from [Zenodo](https://zenodo.org/records/17139882).
 We use the development set for training and the evaluation set for evaluation.
+Note that this dataset has been used in [SVG Challenge 2024](https://www.aicrowd.com/challenges/sounding-video-generation-svg-challenge-2024/problems/spatial-alignment-track).
 
 https://github.com/user-attachments/assets/edcd51f4-c167-418c-9d4e-e4ed94ba8021
 
@@ -119,3 +120,21 @@ Please note that the FAD score is better than the paper's value since a bug in t
 ### Run training scripts of joint method
 
 See [joint_method/TRAINING_JOINT.md](joint_method/TRAINING_JOINT.md).
+
+## Citation
+If you found this repository useful, please consider citing
+```bibtex
+@inproceedings{shimada2026savgbench,
+  title={SAVGBench: Benchmarking Spatially Aligned Audio-Video Generation},
+  author={Shimada, Kazuki and Simon, Christian and Shibuya, Takashi and Takahashi, Shusuke and Mitsufuji, Yuki},
+  booktitle={Proc. of IEEE ICASSP},
+  year={2026}
+}
+```
+
+## References
+This repository is built on the following papers and the open source repositories.
+
+1. Joint Method and Video/Audio Quality Metrics: [MM-Diffusion: Learning Multi-Modal Diffusion Models for Joint Audio and Video Generation](https://github.com/researchmm/MM-Diffusion)
+
+2. Temporal AV-Align Metric: [Diverse and Aligned Audio-to-Video Generation via Text-to-Video Model Adaptation](https://github.com/guyyariv/TempoTokens)

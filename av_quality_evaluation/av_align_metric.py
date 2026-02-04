@@ -14,9 +14,13 @@ Usage:
 import argparse
 import glob
 import cv2
+import tqdm
+
+import warnings
+warnings.simplefilter(action='ignore', category=UserWarning)  # ignore librosa's "UserWarning: PySoundFile failed. Trying audioread instead."
+warnings.simplefilter(action='ignore', category=FutureWarning)  # ignore librosa's "FutureWarning: librosa.core.audio.__audioread_load"
 import librosa
 import librosa.display
-
 
 # Function to extract frames from a video file
 def extract_frames(video_path):
@@ -162,7 +166,7 @@ if __name__ == "__main__":
     files = [file for file in glob.glob(args.input_dir + '*.mp4')]
     score = 0
 
-    for file in files:
+    for file in tqdm.tqdm(files):
 
         file = file[:-4]
         video_path = f'{file}.mp4'
