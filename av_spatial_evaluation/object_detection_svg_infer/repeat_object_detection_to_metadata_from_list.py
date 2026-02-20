@@ -49,15 +49,11 @@ def main(list_txt_video_path, pred_dir, target_categories=None):
         cap = cv2.VideoCapture(video_path)
         df = pd.DataFrame(columns=["frame", "category", "x0", "y0", "x1", "y1"])
 
-        frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        print(f"[OD] Processing {os.path.basename(video_path)}: {frame_count} frames found.")
-
-        for frame_gen in range(frame_count):
-            cap.set(cv2.CAP_PROP_POS_FRAMES, frame_gen)
+        frame_gen = 0
+        while True:
             ret, img = cap.read()
             if not ret or img is None:
-                print(f"[OD]   Warning: Failed to read frame {frame_gen}")
-                continue
+                break
 
             result = inference_detector(model, img)
             
@@ -75,7 +71,6 @@ def main(list_txt_video_path, pred_dir, target_categories=None):
             for idx in range(len(array_labels)):
                 cat = array_labels[idx]
                 score = array_scores[idx]
-                # If target_categories is None, detect all. Otherwise only in list.
                 if (target_categories is None or cat in target_categories) and score > thresh_conf:
                     df.loc[len(df.index)] = [frame_gen, cat,
                                              array_bboxes[idx][0],
@@ -84,9 +79,8 @@ def main(list_txt_video_path, pred_dir, target_categories=None):
                                              array_bboxes[idx][3]]
                     frame_found += 1
             
-            # if frame_found > 0:
-            #    print(f"[OD]   Frame {frame_gen}: found {frame_found} boxes")
-
+            frame_gen += 1
+            
         if not df.empty:
             df = df.sort_values("frame")
             print(f"[OD] Saved {len(df)} total boxes for {os.path.basename(video_path)}")
