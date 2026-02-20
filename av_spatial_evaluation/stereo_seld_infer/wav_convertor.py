@@ -63,8 +63,8 @@ class WavConvertor(object):
         csv_path = wav_path.replace('audio', 'metadata').replace('video', 'metadata').replace('.wav', '.csv').replace('.mp4', '.csv')
         if self._args.eval_wav_txt and "evaltest" in self._args.eval_wav_txt:
             csv_array = np.array([[-1, -1, -1, -1]])  # dummy for evaltest
-        elif self._args.eval_wav_txt and "list_path_video" in self._args.eval_wav_txt:
-            csv_array = np.array([[-1, -1, -1, -1]]) # dummy for list_path_video
+        elif self._args.eval_wav_txt and (".txt" in self._args.eval_wav_txt):
+            csv_array = np.array([[-1, -1, -1, -1]]) # dummy for batch list evaluation runs
         else:
             csv_array = make_time_array(csv_path, self._category_id_config)
         label_cat, label_azi = get_label(csv_array, 0, duration, self._args.class_num)
