@@ -39,6 +39,9 @@ def main(list_txt_video_path, pred_seld_dir, pred_od_dir):
         df_seld = pd.read_csv(pred_seld_path, sep=",", header=None) if os.path.getsize(pred_seld_path) > 0 else pd.DataFrame([])
         df_od = pd.read_csv(pred_od_path, sep=",", header=None) if os.path.getsize(pred_od_path) > 0 else pd.DataFrame([])
 
+        clip_TP = 0
+        clip_FN = 0
+
         for row_seld in df_seld.values:
             frame_seld, category_seld, x_seld = int(row_seld[0]), int(row_seld[1]), int(row_seld[2])
 
@@ -58,9 +61,19 @@ def main(list_txt_video_path, pred_seld_dir, pred_od_dir):
                 df_od_around = df_od[(df_od[0] >= frame_od - allow_err_frame_od) & (df_od[0] <= frame_od + allow_err_frame_od)]
 
             if is_sound_near_to_object(x_seld, df_od_around):
-                num_TP += 1
+                clip_TP += 1
             else:
-                num_FN += 1
+                clip_FN += 1
+
+        if (clip_TP + clip_FN) == 0:
+            clip_score = "None"
+        else:
+            clip_score = clip_TP / (clip_TP + clip_FN)
+            
+        print(f"CLIP_SCORE: {csv_file} = {clip_score}")
+        
+        num_TP += clip_TP
+        num_FN += clip_FN
 
     print(f"num_TP: {num_TP}, num_FN: {num_FN}, total: {num_TP + num_FN}")
     
