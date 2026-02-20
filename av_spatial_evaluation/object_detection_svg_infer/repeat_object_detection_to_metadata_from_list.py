@@ -11,44 +11,82 @@ def main(list_txt_video_path, pred_dir):
 
     config_file = "av_spatial_evaluation/object_detection_svg_infer/yolox_tiny_8x8_300e_coco.py"
     checkpoint_file = "av_spatial_evaluation/object_detection_svg_infer/yolox_tiny_8x8_300e_coco_20211124_171234-b4047906.pth"
-    model = init_detector(config_file, checkpoint_file, device="cpu")  # or device="cuda:0" if mmdet-matched GPU
+    
+    if not os.path.exists(config_file):
+        print(f"[ERROR] Config file missing: {os.path.abspath(config_file)}")
+    if not os.path.exists(checkpoint_file):
+        print(f"[ERROR] Checkpoint file missing: {os.path.abspath(checkpoint_file)}")
+
+    # Detect device
+    import torch
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    print(f"[OD] Initializing YOLOX on {device}...")
+    
+    try:
+        model = init_detector(config_file, checkpoint_file, device=device)
+        print(f"[OD] Model loaded successfully.")
+    except Exception as e:
+        print(f"[OD] FAILED to initialize detector: {e}")
+        return
 
     thresh_conf = 0.3
-
     os.makedirs(pred_dir, exist_ok=True)
 
     for video_path in tqdm.tqdm(list_video_path):
+        if not os.path.exists(video_path):
+            print(f"[OD] ERROR: Video not found at {video_path}")
+            continue
+            
         cap = cv2.VideoCapture(video_path)
         df = pd.DataFrame(columns=["frame", "category", "x0", "y0", "x1", "y1"])
 
         frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        # assert frame_count == 20, "We expect the frame count is 20"
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        assert fps == 4, "We expect the fps is 4"
+        print(f"[OD] Processing {os.path.basename(video_path)}: {frame_count} frames found.")
 
         for frame_gen in range(frame_count):
             cap.set(cv2.CAP_PROP_POS_FRAMES, frame_gen)
             ret, img = cap.read()
+            if not ret or img is None:
+                print(f"[OD]   Warning: Failed to read frame {frame_gen}")
+                continue
 
             result = inference_detector(model, img)
-            array_labels = result.pred_instances.labels.cpu().detach().numpy()
-            array_scores = result.pred_instances.scores.cpu().detach().numpy()
-            array_bboxes = result.pred_instances.bboxes.cpu().detach().numpy()
+            
+            # Extract boxes
+            instances = result.pred_instances
+            array_labels = instances.labels.cpu().detach().numpy()
+            array_scores = instances.scores.cpu().detach().numpy()
+            array_bboxes = instances.bboxes.cpu().detach().numpy()
 
-            category = 0  # 0: person
-            array_scores_category = array_scores[array_labels == category]
-            array_bboxes_category = array_bboxes[array_labels == category]
-
-            for i in range(len(array_scores_category)):
-                if array_scores_category[i] > thresh_conf:
-                    df.loc[len(df.index)] = [frame_gen, category,
-                                             array_bboxes_category[i][0],
-                                             array_bboxes_category[i][1],
-                                             array_bboxes_category[i][2],
-                                             array_bboxes_category[i][3]]
+            # Detection targets:
+            # The original benchmark was person-centric, but for general YouTube 
+            # clips, we want to detect ANY object that could be making sound.
+            # COCO has 80 classes; if we use a broad range, alignment is more robust.
+            
+            target_categories = None # None means detect all categories
+            
+            frame_found = 0
+            for idx in range(len(array_labels)):
+                cat = array_labels[idx]
+                score = array_scores[idx]
+                # If target_categories is None, detect all. Otherwise only in list.
+                if (target_categories is None or cat in target_categories) and score > thresh_conf:
+                    df.loc[len(df.index)] = [frame_gen, cat,
+                                             array_bboxes[idx][0],
+                                             array_bboxes[idx][1],
+                                             array_bboxes[idx][2],
+                                             array_bboxes[idx][3]]
+                    frame_found += 1
+            
+            # if frame_found > 0:
+            #    print(f"[OD]   Frame {frame_gen}: found {frame_found} boxes")
 
         if not df.empty:
             df = df.sort_values("frame")
+            print(f"[OD] Saved {len(df)} total boxes for {os.path.basename(video_path)}")
+        else:
+            print(f"[OD] WARNING: 0 total boxes for {os.path.basename(video_path)}")
+            
         pred_path = os.path.join(pred_dir,
                                  os.path.basename(video_path).replace(".mp4", ".csv"))
         df[["frame", "category"]] = df[["frame", "category"]].astype(int)
