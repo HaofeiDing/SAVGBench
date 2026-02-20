@@ -6,7 +6,7 @@ import sys
 from mmdet.apis import init_detector, inference_detector
 
 
-def main(list_txt_video_path, pred_dir):
+def main(list_txt_video_path, pred_dir, target_categories=None):
     list_video_path = [x[0] for x in pd.read_table(list_txt_video_path, header=None).values.tolist()]
 
     config_file = "av_spatial_evaluation/object_detection_svg_infer/yolox_tiny_8x8_300e_coco.py"
@@ -30,6 +30,15 @@ def main(list_txt_video_path, pred_dir):
         return
 
     thresh_conf = 0.3
+    
+    # If target_categories is passed as a string (from CLI), parse it
+    if isinstance(target_categories, str):
+        try:
+            target_categories = [int(x) for x in target_categories.split(',')]
+            print(f"[OD] Filtering for COCO categories: {target_categories}")
+        except:
+            target_categories = None
+
     os.makedirs(pred_dir, exist_ok=True)
 
     for video_path in tqdm.tqdm(list_video_path):
@@ -59,11 +68,8 @@ def main(list_txt_video_path, pred_dir):
             array_bboxes = instances.bboxes.cpu().detach().numpy()
 
             # Detection targets:
-            # The original benchmark was person-centric, but for general YouTube 
-            # clips, we want to detect ANY object that could be making sound.
-            # COCO has 80 classes; if we use a broad range, alignment is more robust.
-            
-            target_categories = None # None means detect all categories
+            # If target_categories is None, we detect all classes for robustness.
+            # If target_categories is provided, we only look for those specific objects.
             
             frame_found = 0
             for idx in range(len(array_labels)):
@@ -94,10 +100,12 @@ def main(list_txt_video_path, pred_dir):
 
 if __name__ == "__main__":
    args = sys.argv
-   assert len(args) == 3, "We expect two args: python repeat_object_detection_to_metadata_from_list.py LIST_TXT_VIDEO_PATH PRED_DIR"
-   # python repeat_object_detection_to_metadata_from_list.py ~/avgen/dataset/STARSS23_PlanarStereo_generated_20240626/list_path_video.txt ~/avgen/dataset/STARSS23_PlanarStereo_generated_20240626/pred_yolox_tiny_mmdetection
+   if len(args) < 3:
+       print("Usage: python repeat_object_detection_to_metadata_from_list.py LIST_TXT_VIDEO_PATH PRED_DIR [CATEGORIES_CSV]")
+       sys.exit(1)
 
    list_txt_video_path = args[1]
    pred_dir = args[2]
+   target_cats = args[3] if len(args) > 3 else None
 
-   main(list_txt_video_path, pred_dir)
+   main(list_txt_video_path, pred_dir, target_cats)
