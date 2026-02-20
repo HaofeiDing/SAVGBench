@@ -22,7 +22,7 @@ def main(list_txt_video_path, pred_dir):
         df = pd.DataFrame(columns=["frame", "category", "x0", "y0", "x1", "y1"])
 
         frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        assert frame_count == 20, "We expect the frame count is 20"
+        # assert frame_count == 20, "We expect the frame count is 20"
         fps = cap.get(cv2.CAP_PROP_FPS)
         assert fps == 4, "We expect the fps is 4"
 

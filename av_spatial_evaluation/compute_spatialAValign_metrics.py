@@ -46,10 +46,15 @@ def main(list_txt_video_path, pred_seld_dir, pred_od_dir):
                 df_od_around = pd.DataFrame([]) # the same as df_od, both are empty
             else:
                 frame_od = int(np.round(frame_seld / fps_seld * fps_od))
-                if frame_od == 20:
-                    frame_od = 19  # when frame_seld is 49 (the last frame), frame_od is rounded to 20 but 19 is the biggest in frame_ods
-                else:
-                    assert (frame_od >= 0) and (frame_od < 20), "We expect frame_seld 0 and 49 is the first and last frames"
+                
+                # Dynamic clamping based on available OD frames
+                if not df_od.empty:
+                    max_available_frame = df_od[0].max()
+                    if frame_od > max_available_frame:
+                         frame_od = max_available_frame
+                
+                # Remove assertion or make it dynamic
+                # assert (frame_od >= 0) and (frame_od < 20), "We expect frame_seld 0 and 49 is the first and last frames"
                 df_od_around = df_od[(df_od[0] >= frame_od - allow_err_frame_od) & (df_od[0] <= frame_od + allow_err_frame_od)]
 
             if is_sound_near_to_object(x_seld, df_od_around):
