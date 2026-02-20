@@ -62,14 +62,20 @@ def main(list_txt_video_path, pred_seld_dir, pred_od_dir):
             else:
                 num_FN += 1
 
-    print(num_TP, num_FN, num_TP + num_FN)
-    print(num_TP / (num_TP + num_FN))
+    print(f"num_TP: {num_TP}, num_FN: {num_FN}, total: {num_TP + num_FN}")
+    
+    if (num_TP + num_FN) == 0:
+        final_score = 0.0
+    else:
+        final_score = num_TP / (num_TP + num_FN)
+    
+    print(f"AV_final_score: {final_score}")
 
     each_component = "AV spatial each component: num_TP: {}, num_FN: {}, num_TP + num_FN: {} \n".format(num_TP, num_FN, num_TP + num_FN) 
-    av_final_score = "AV_final_score: {} \n".format(num_TP / (num_TP + num_FN))
+    av_final_score_str = "AV_final_score: {} \n".format(final_score)
     with open("results.out", "a") as myfile:
         myfile.write(each_component)
-        myfile.write(av_final_score)
+        myfile.write(av_final_score_str)
 
 
 if __name__ == "__main__":
